@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidLearn — Especificación v2 Consolidada</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+  :root{
+    --primary:#FF6B35;--secondary:#4ECDC4;--accent:#FFE66D;--purple:#A855F7;--pink:#FF6B9D;--green:#06D6A0;--red:#FF5470;
+    --darker:#0F0F1A;--card:#16213E;--card2:#1B2A4A;--text:#F0F4FF;--muted:#8892B0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--darker);color:var(--text);min-height:100vh;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;background:rgba(15,15,26,0.97);border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px;}
+  .logo{font-family:'Fredoka One',cursive;font-size:1.5rem;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .nav-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+  .nav-tab{padding:7px 14px;border-radius:50px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.76rem;transition:all 0.2s;background:rgba(255,255,255,0.06);color:var(--muted);}
+  .nav-tab.active{background:linear-gradient(135deg,var(--primary),var(--pink));color:white;box-shadow:0 4px 16px rgba(255,107,53,0.35);}
+  .nav-tab:hover:not(.active){background:rgba(255,255,255,0.1);color:var(--text);}
+  .section{display:none;padding:36px 26px;max-width:1060px;margin:0 auto;}
+  .section.active{display:block;animation:fadeIn 0.35s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .hero{text-align:center;padding:40px 16px 26px;}
+  .hero-badge{display:inline-block;background:linear-gradient(135deg,rgba(255,107,53,0.15),rgba(168,85,247,0.15));border:1px solid rgba(255,107,53,0.3);padding:5px 18px;border-radius:50px;font-size:0.73rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;}
+  .hero h1{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,4vw,2.9rem);line-height:1.15;margin-bottom:12px;}
+  .hero h1 span{background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero p{color:var(--muted);font-size:0.96rem;max-width:600px;margin:0 auto;line-height:1.7;}
+  .sec-title{font-family:'Fredoka One',cursive;font-size:clamp(1.25rem,2.5vw,1.7rem);margin-bottom:6px;}
+  .sec-sub{color:var(--muted);font-size:0.87rem;margin-bottom:18px;}
+  .divider{width:52px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--accent));margin:12px 0 22px;}
+  h4.block{font-family:'Fredoka One',cursive;font-size:1.05rem;margin:28px 0 4px;color:var(--accent);}
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:22px 0;}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin:20px 0;}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px;transition:transform 0.2s,box-shadow 0.2s;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(0,0,0,0.3);}
+  .card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:12px;}
+  .ic-or{background:linear-gradient(135deg,rgba(255,107,53,0.25),rgba(255,107,53,0.08));}
+  .ic-te{background:linear-gradient(135deg,rgba(78,205,196,0.25),rgba(78,205,196,0.08));}
+  .ic-pu{background:linear-gradient(135deg,rgba(168,85,247,0.25),rgba(168,85,247,0.08));}
+  .ic-pi{background:linear-gradient(135deg,rgba(255,107,157,0.25),rgba(255,107,157,0.08));}
+  .ic-gr{background:linear-gradient(135deg,rgba(6,214,160,0.25),rgba(6,214,160,0.08));}
+  .ic-ye{background:linear-gradient(135deg,rgba(255,230,109,0.25),rgba(255,230,109,0.08));}
+  .card h3{font-size:0.98rem;font-weight:800;margin-bottom:7px;}
+  .card p{color:var(--muted);font-size:0.84rem;line-height:1.6;}
+  .card p strong,.card li strong{color:var(--text);}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.82rem;}
+  th{background:linear-gradient(135deg,var(--primary),var(--pink));color:white;padding:10px 13px;text-align:left;font-weight:800;letter-spacing:0.3px;font-size:0.78rem;}
+  th:first-child{border-radius:9px 0 0 0;}th:last-child{border-radius:0 9px 0 0;}
+  td{padding:10px 13px;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:top;}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .winner{color:var(--green);font-weight:800;}
+  .neutral{color:var(--accent);font-weight:700;}
+  .lose{color:var(--muted);}
+  .tag{display:inline-block;padding:2px 9px;border-radius:50px;font-size:0.68rem;font-weight:800;white-space:nowrap;}
+  .tag-r{background:rgba(255,84,112,0.2);color:var(--red);}
+  .tag-g{background:rgba(6,214,160,0.2);color:var(--green);}
+  .tag-y{background:rgba(255,230,109,0.2);color:var(--accent);}
+  .tag-c{background:rgba(255,107,157,0.2);color:var(--pink);}
+  .tag-s{background:rgba(78,205,196,0.2);color:var(--secondary);}
+  .tag-m{background:rgba(168,85,247,0.2);color:var(--purple);}
+  .flow{display:flex;align-items:stretch;overflow-x:auto;padding:10px 0 18px;gap:0;scrollbar-width:thin;}
+  .flow-step{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:15px;padding:15px 13px;min-width:150px;text-align:center;flex-shrink:0;display:flex;flex-direction:column;}
+  .flow-step .em{font-size:1.7rem;display:block;margin-bottom:6px;}
+  .flow-step h4{font-size:0.78rem;font-weight:800;margin-bottom:3px;}
+  .flow-step p{font-size:0.68rem;color:var(--muted);line-height:1.4;}
+  .arrow{color:var(--primary);font-size:1.25rem;display:flex;align-items:center;padding:0 5px;flex-shrink:0;}
+  .callout{border-radius:13px;padding:15px 17px;margin:16px 0;font-size:0.85rem;line-height:1.6;}
+  .callout-rec{background:linear-gradient(135deg,rgba(6,214,160,0.12),rgba(78,205,196,0.06));border:1px solid rgba(6,214,160,0.3);}
+  .callout-warn{background:linear-gradient(135deg,rgba(255,84,112,0.12),rgba(255,107,53,0.06));border:1px solid rgba(255,84,112,0.3);}
+  .callout-info{background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(78,205,196,0.06));border:1px solid rgba(168,85,247,0.3);}
+  .callout strong{display:block;margin-bottom:5px;font-size:0.9rem;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0;}
+  .pill{background:var(--card2);border:1px solid rgba(255,255,255,0.08);border-radius:50px;padding:6px 15px;font-size:0.76rem;font-weight:700;}
+  .stack-diagram{background:var(--card);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin:20px 0;}
+  .stack-layer{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;margin:9px 0;border:1px solid rgba(255,255,255,0.06);}
+  .sl-front{background:linear-gradient(135deg,rgba(78,205,196,0.15),rgba(78,205,196,0.04));}
+  .sl-back{background:linear-gradient(135deg,rgba(255,107,53,0.15),rgba(255,107,53,0.04));}
+  .sl-db{background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(168,85,247,0.04));}
+  .sl-rt{background:linear-gradient(135deg,rgba(255,230,109,0.13),rgba(255,230,109,0.04));}
+  .sl-icon{font-size:1.7rem;flex-shrink:0;}
+  .sl-body h4{font-size:0.92rem;font-weight:800;margin-bottom:2px;}
+  .sl-body p{font-size:0.77rem;color:var(--muted);line-height:1.5;}
+  .conn{text-align:center;color:var(--muted);font-size:1rem;margin:-2px 0;}
+  .matrix{overflow-x:auto;margin:20px 0;}
+  .kido-svg{width:100%;min-width:560px;height:auto;display:block;}
+  .step-list{counter-reset:step;list-style:none;margin:18px 0;}
+  .step-list li{position:relative;padding:14px 16px 14px 56px;background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:13px;margin-bottom:10px;font-size:0.85rem;line-height:1.6;color:var(--muted);}
+  .step-list li strong{color:var(--text);}
+  .step-list li::before{counter-increment:step;content:counter(step);position:absolute;left:14px;top:14px;width:28px;height:28px;background:linear-gradient(135deg,var(--primary),var(--pink));color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;}
+  .toggle-demo{background:var(--card);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;text-align:center;margin:18px 0;}
+  .tg-row{display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:50px;overflow:hidden;margin:12px 0;}
+  .tg-btn{padding:9px 26px;background:transparent;border:none;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+  .tg-btn.on{background:linear-gradient(135deg,var(--primary),var(--pink));color:white;}
+  .price-display{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--accent);margin:10px 0;}
+  .timeline{position:relative;padding-left:26px;margin-top:8px;}
+  .timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--primary),var(--purple));}
+  .tl-item{position:relative;margin-bottom:24px;}
+  .tl-dot{position:absolute;left:-22px;top:3px;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));box-shadow:0 0 13px rgba(255,107,53,0.5);}
+  .tl-item h4{font-weight:800;margin-bottom:3px;font-size:0.92rem;}
+  .phase-lbl{font-size:0.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:5px;}
+  .tl-item p{color:var(--muted);font-size:0.82rem;line-height:1.6;}
+  ::-webkit-scrollbar{height:5px;width:5px;}::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px;}
+  .footnote{font-size:0.74rem;color:var(--muted);font-style:italic;margin-top:10px;}
+  .scroll-hint{display:none;}
+
+  /* ===== OPTIMIZACIÓN MÓVIL ===== */
+  @media (max-width: 720px){
+    .nav{padding:12px 16px;flex-direction:column;align-items:stretch;gap:12px;}
+    .logo{text-align:center;font-size:1.35rem;}
+    .nav-tabs{gap:6px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .nav-tabs::-webkit-scrollbar{display:none;}
+    .nav-tab{padding:9px 16px;font-size:0.8rem;white-space:nowrap;flex-shrink:0;}
+    .section{padding:26px 16px;}
+    .hero{padding:28px 8px 20px;}
+    .hero h1{font-size:1.6rem;}
+    .hero p{font-size:0.9rem;}
+    .grid-2,.grid-3{grid-template-columns:1fr;gap:13px;}
+    .card{padding:18px;}
+    .sec-title{font-size:1.2rem;}
+    table{font-size:0.78rem;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;}
+    th,td{padding:9px 11px;}
+    .flow{padding:8px 0 16px;-webkit-overflow-scrolling:touch;}
+    .flow-step{min-width:135px;padding:13px 11px;}
+    .stack-layer{flex-direction:column;text-align:center;gap:9px;padding:14px 13px;}
+    .sl-icon{font-size:1.9rem;}
+    .step-list li{padding:13px 14px 13px 50px;font-size:0.83rem;}
+    .matrix{margin:16px -16px;padding:0 16px;}
+    .scroll-hint{display:block;text-align:center;font-size:0.72rem;color:var(--muted);font-style:italic;margin:-6px 0 10px;}
+    .price-display{font-size:1.6rem;}
+    .tg-btn{padding:9px 20px;font-size:0.78rem;}
+    .pill{font-size:0.72rem;padding:6px 13px;}
+    .callout{padding:14px 15px;font-size:0.82rem;}
+    h4.block{font-size:0.98rem;}
+  }
+  @media (max-width: 400px){
+    .hero h1{font-size:1.4rem;}
+    .nav-tab{padding:8px 13px;font-size:0.75rem;}
+    .flow-step{min-width:122px;}
+    .card h3{font-size:0.92rem;}
+  }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="logo">✨ KidLearn v2</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="show('resumen',this)">📋 Resumen</button>
+    <button class="nav-tab" onclick="show('kido',this)">🦊 Mascota KIDO</button>
+    <button class="nav-tab" onclick="show('sensei',this)">🧠 Modo Sensei</button>
+    <button class="nav-tab" onclick="show('moneda',this)">💱 Moneda</button>
+    <button class="nav-tab" onclick="show('coins',this)">🪙 KidoCoins</button>
+    <button class="nav-tab" onclick="show('consent',this)">🔐 Consentimiento</button>
+    <button class="nav-tab" onclick="show('stack',this)">⚙️ Stack Técnico</button>
+  </div>
+</nav>
+
+<div class="section active" id="s-resumen">
+  <div class="hero">
+    <div class="hero-badge">🇨🇴 Decisiones Consolidadas · v2</div>
+    <h1>KidLearn — <span>Especificación Profundizada</span></h1>
+    <p>Todas las decisiones tomadas tras las rondas de discovery: mascota ramificada, IA adaptativa, economía de monedas con recompensas por fases, consentimiento parental verificable y stack técnico definitivo.</p>
+  </div>
+  <div class="sec-title">✅ Decisiones Finales</div><div class="divider"></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-icon ic-te">📱</div><h3>Frontend — Flutter</h3><p>Elegido por la naturaleza tipo-juego: animaciones de KIDO, partículas de recompensa y consistencia pixel-perfect en gama alta y baja.</p></div>
+    <div class="card"><div class="card-icon ic-or">⚙️</div><h3>Backend — Híbrido</h3><p>Supabase para infraestructura (Auth/DB/Storage/Realtime — velocidad) + .NET para lógica sensible (Sensei, KidoCoins, consentimiento, facturación — robustez).</p></div>
+    <div class="card"><div class="card-icon ic-pu">🦊</div><h3>KIDO — Evolución ramificada</h3><p>La edad define el estilo de render; el gusto del niño define la rama temática. 4 etapas, cambio de rama con costo.</p></div>
+    <div class="card"><div class="card-icon ic-gr">🧠</div><h3>Modo Sensei — IA adaptativa</h3><p>Completo en Premium · versión light en Básico (refuerza materia más débil) · no incluido en Gratis.</p></div>
+    <div class="card"><div class="card-icon ic-ye">🪙</div><h3>KidoCoins + recompensas</h3><p>MVP digital · Fase 2 bonos al correo del padre · premios físicos descartados por riesgo legal/operativo.</p></div>
+    <div class="card"><div class="card-icon ic-pi">💱</div><h3>Moneda COP / USD</h3><p>Selector en panel de padres. Precios configurables en backend, no hardcoded.</p></div>
+  </div>
+  <div class="callout callout-rec"><strong>🎯 Diferenciador comercial #1</strong>El Modo Sensei (IA adaptativa con zona de desarrollo próximo) es lo que justifica el precio Premium y separa a KidLearn de la competencia genérica.</div>
+</div>
+
+<div class="section" id="s-kido">
+  <div class="sec-title">🦊 Mascota KIDO — Evolución Ramificada</div>
+  <div class="sec-sub">La edad define el ESTILO · el gusto define la RAMA temática</div><div class="divider"></div>
+  <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;">En el onboarding se pregunta la edad y, con íconos grandes sin texto (accesible a niños de 3 años), qué le gusta más al niño. KIDO empieza como huevo/criatura ambigua y evoluciona en 4 etapas. El mismo niño amante del espacio ve un astronauta bebé Chibi a los 4 años y un cyborg manga a los 9 — la transformación se siente mágica porque es <strong style="color:var(--text)">suya</strong>.</p>
+  <h4 class="block">🌳 Las 4 ramas evolutivas</h4>
+  <table>
+    <thead><tr><th>Rama</th><th>🥚 Bebé</th><th>🎒 Explorador</th><th>⚡ Ninja</th><th>🔥 Maestro</th></tr></thead>
+    <tbody>
+      <tr><td>🐾 <strong>Animales</strong></td><td>Zorrito bebé</td><td>Zorro con bufanda</td><td>Zorro guerrero con armadura</td><td>Bestia espiritual de 9 colas</td></tr>
+      <tr><td>🚀 <strong>Espacio/Futuro</strong></td><td>Criatura con casco</td><td>Mini astronauta</td><td>Robot-astronauta ágil</td><td>Comandante cyborg galáctico</td></tr>
+      <tr><td>✨ <strong>Magia/Fantasía</strong></td><td>Espíritu con chispas</td><td>Aprendiz de mago</td><td>Hechicero con bastón</td><td>Archimago con familiar propio</td></tr>
+      <tr><td>⚽ <strong>Deportes/Aventura</strong></td><td>Cachorro enérgico</td><td>Explorador con mochila</td><td>Atleta-ninja</td><td>Héroe legendario</td></tr>
+    </tbody>
+  </table>
+  <h4 class="block">🎨 Estilo de render según edad</h4>
+  <div class="pill-row">
+    <span class="pill"><span class="tag tag-c">3–5 años</span> Chibi suave · pastel · redondeado (Ghibli)</span>
+    <span class="pill"><span class="tag tag-s">6–8 años</span> Colorido expresivo (Pokémon)</span>
+    <span class="pill"><span class="tag tag-m">9–10 años</span> Manga dinámico · efectos de chakra</span>
+  </div>
+  <h4 class="block">🗺️ Matriz visual de referencia (para ilustrador)</h4>
+  <div class="callout callout-info"><strong>📌 Nota</strong>Diagrama conceptual de siluetas, paletas y direcciones de diseño — NO arte final. Brief de referencia para el ilustrador.</div>
+  <div class="scroll-hint">← deslizá horizontalmente para ver toda la matriz →</div>
+  <div class="matrix">
+    <svg class="kido-svg" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gAnim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6B35"/><stop offset="1" stop-color="#FFE66D"/></linearGradient>
+        <linearGradient id="gSpace" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ECDC4"/><stop offset="1" stop-color="#A855F7"/></linearGradient>
+        <linearGradient id="gMagic" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#FF6B9D"/></linearGradient>
+        <linearGradient id="gSport" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06D6A0"/><stop offset="1" stop-color="#4ECDC4"/></linearGradient>
+        <marker id="ah" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6Z" fill="#FF6B35"/></marker>
+      </defs>
+      <text x="380" y="26" fill="#F0F4FF" font-family="Fredoka One" font-size="17" text-anchor="middle">Matriz Evolutiva de KIDO — 4 ramas × 4 etapas</text>
+      <text x="190" y="58" fill="#8892B0" font-family="Nunito" font-weight="800" font-size="12" text-anchor="middle">🥚 BEBÉ</text>
+      <text x="330" y="58" fill="#8892B0" font-family="Nunito" font-weight="800" font-size="12" text-anchor="middle">🎒 EXPLORADOR</text>
+      <text x="490" y="58" fill="#8892B0" font-family="Nunito" font-weight="800" font-size="12" text-anchor="middle">⚡ NINJA</text>
+      <text x="650" y="58" fill="#8892B0" font-family="Nunito" font-weight="800" font-size="12" text-anchor="middle">🔥 MAESTRO</text>
+      <g font-family="Nunito" font-size="11" fill="#F0F4FF" font-weight="700" text-anchor="middle">
+        <text x="58" y="110" fill="#FF6B35" font-weight="800">🐾 Animales</text>
+        <circle cx="190" cy="100" r="20" fill="url(#gAnim)" opacity="0.85"/><text x="190" y="138">huevo+orejas</text>
+        <path d="M310 84 q20 -8 40 0 q8 22 -20 34 q-28 -12 -20 -34Z" fill="url(#gAnim)" opacity="0.85"/><text x="330" y="138">zorrito</text>
+        <path d="M470 82 l22 10 l-2 26 l-18 8 l-18 -8 l-2 -26Z" fill="url(#gAnim)" opacity="0.9"/><text x="490" y="138">guerrero</text>
+        <path d="M650 80 l16 12 l8 20 l-10 16 l-14 4 l-14 -4 l-10 -16 l8 -20Z" fill="url(#gAnim)"/><text x="650" y="138">bestia 9 colas</text>
+        <text x="58" y="208" fill="#4ECDC4" font-weight="800">🚀 Espacio</text>
+        <circle cx="190" cy="196" r="20" fill="url(#gSpace)" opacity="0.85"/><circle cx="190" cy="196" r="11" fill="#0F0F1A" opacity="0.35"/><text x="190" y="234">con casco</text>
+        <rect x="316" y="178" width="28" height="34" rx="12" fill="url(#gSpace)" opacity="0.85"/><text x="330" y="234">astronauta</text>
+        <rect x="474" y="176" width="32" height="36" rx="7" fill="url(#gSpace)" opacity="0.9"/><circle cx="490" cy="191" r="5" fill="#FFE66D"/><text x="490" y="234">robot-astro</text>
+        <path d="M634 174 h32 v30 l-16 12 l-16 -12Z" fill="url(#gSpace)"/><circle cx="650" cy="189" r="6" fill="#FF6B9D"/><text x="650" y="234">cyborg</text>
+        <text x="58" y="306" fill="#A855F7" font-weight="800">✨ Magia</text>
+        <circle cx="190" cy="294" r="19" fill="url(#gMagic)" opacity="0.8"/><text x="190" y="332">espíritu</text>
+        <path d="M330 274 l16 30 h-32Z" fill="url(#gMagic)" opacity="0.85"/><text x="330" y="332">aprendiz</text>
+        <path d="M490 272 l14 18 l-6 26 h-16 l-6 -26Z" fill="url(#gMagic)" opacity="0.9"/><rect x="503" y="270" width="3" height="34" fill="#FFE66D"/><text x="490" y="332">hechicero</text>
+        <path d="M650 270 l18 14 l-6 30 h-24 l-6 -30Z" fill="url(#gMagic)"/><circle cx="668" cy="278" r="5" fill="#4ECDC4"/><text x="650" y="332">archimago</text>
+        <text x="58" y="404" fill="#06D6A0" font-weight="800">⚽ Deportes</text>
+        <circle cx="190" cy="392" r="20" fill="url(#gSport)" opacity="0.85"/><text x="190" y="430">cachorro</text>
+        <circle cx="330" cy="392" r="20" fill="url(#gSport)" opacity="0.85"/><rect x="320" y="370" width="20" height="8" rx="3" fill="#FF6B35"/><text x="330" y="430">con mochila</text>
+        <path d="M490 372 l18 14 v22 l-18 8 l-18 -8 v-22Z" fill="url(#gSport)" opacity="0.9"/><text x="490" y="430">atleta-ninja</text>
+        <path d="M650 370 l20 16 l-6 24 l-14 6 l-14 -6 l-6 -24Z" fill="url(#gSport)"/><circle cx="650" cy="388" r="5" fill="#FFE66D"/><text x="650" y="430">héroe</text>
+      </g>
+      <g stroke="#FF6B35" stroke-width="1.5" opacity="0.35" marker-end="url(#ah)">
+        <line x1="218" y1="100" x2="298" y2="96"/><line x1="362" y1="96" x2="448" y2="94"/><line x1="512" y1="94" x2="622" y2="92"/>
+      </g>
+      <text x="380" y="470" fill="#8892B0" font-family="Nunito" font-size="11" text-anchor="middle" font-style="italic">Siluetas conceptuales — direcciones de diseño, paleta y progresión de complejidad</text>
+      <text x="380" y="492" fill="#8892B0" font-family="Nunito" font-size="11" text-anchor="middle">Render: 3–5 redondeado/pastel · 6–8 expresivo · 9–10 angular/manga</text>
+    </svg>
+  </div>
+  <div class="callout callout-info"><strong>🧠 Detalle psicológico</strong>Los gustos infantiles cambian rápido. Se permite cambiar de rama 1 vez por periodo, pero <strong>cuesta KidoCoins</strong> — así el cambio tiene peso emocional y el niño no lo banaliza.</div>
+</div>
+
+<div class="section" id="s-sensei">
+  <div class="sec-title">🧠 Modo Sensei — IA Adaptativa</div>
+  <div class="sec-sub">Nivel paralelo invisible · zona de desarrollo próximo (Vygotsky)</div><div class="divider"></div>
+  <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;">Además de los 4 niveles fijos, existe un nivel paralelo que el niño no ve como tal — lo vive como "los desafíos especiales que KIDO te trae hoy". La IA observa el comportamiento y genera ejercicios que atacan debilidades sin frustrar.</p>
+  <h4 class="block">📊 Señales que observa la IA</h4>
+  <div class="grid-3">
+    <div class="card"><div class="card-icon ic-or">⏱️</div><h3>Velocidad de respuesta</h3><p>Por tipo de ejercicio. Distingue dominio de esfuerzo.</p></div>
+    <div class="card"><div class="card-icon ic-pi">🔍</div><h3>Patrones de error</h3><p>¿Falla restas con llevada? ¿Confunde b/d?</p></div>
+    <div class="card"><div class="card-icon ic-ye">🌅</div><h3>Hora de mejor rendimiento</h3><p>Optimiza cuándo sugiere sesiones.</p></div>
+    <div class="card"><div class="card-icon ic-pu">📉</div><h3>Tasa de abandono</h3><p>Qué juego abandona y cuándo.</p></div>
+    <div class="card"><div class="card-icon ic-te">🔁</div><h3>Retención de conceptos</h3><p>¿Olvida lo aprendido la semana pasada?</p></div>
+    <div class="card"><div class="card-icon ic-gr">🎯</div><h3>Curva de progreso</h3><p>Ajusta dificultad en tiempo real.</p></div>
+  </div>
+  <h4 class="block">🪜 Diferenciación por plan</h4>
+  <table>
+    <thead><tr><th>Plan</th><th>Modo Sensei</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>🌱 Gratis</strong></td><td class="lose">No incluido</td><td>Solo niveles fijos estándar</td></tr>
+      <tr><td><strong>⚡ Básico</strong></td><td class="neutral">Versión light</td><td>Refuerza únicamente la materia más débil detectada, sin granularidad multidimensional</td></tr>
+      <tr><td><strong>🔥 Premium</strong></td><td class="winner">Completo</td><td>Análisis multidimensional + set diario 100% personalizado + seguimiento de retención</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout-rec"><strong>💡 Nota técnica importante</strong>No se necesita IA generativa cara en el MVP. Un <strong>motor de reglas + modelo de recomendación simple</strong> (árbol de decisión o filtrado colaborativo) cubre el MVP. La IA pesada se incorpora después con datos reales acumulados — reduce drásticamente costo y riesgo inicial.</div>
+</div>
+
+<div class="section" id="s-moneda">
+  <div class="sec-title">💱 Selector de Moneda COP / USD</div>
+  <div class="sec-sub">Configurado en el panel de padres — nunca por el niño</div><div class="divider"></div>
+  <div class="toggle-demo">
+    <p style="color:var(--muted);font-size:0.85rem;">Demo interactivo del selector (panel de padres)</p>
+    <div class="tg-row">
+      <button class="tg-btn on" id="bCOP" onclick="setCur('COP')">🇨🇴 COP</button>
+      <button class="tg-btn" id="bUSD" onclick="setCur('USD')">🇺🇸 USD</button>
+    </div>
+    <div>
+      <div style="display:inline-block;margin:0 18px;">
+        <div style="font-size:0.8rem;color:var(--muted);font-weight:800;">⚡ Básico</div>
+        <div class="price-display" id="pBasic">$20.000</div>
+        <div style="font-size:0.72rem;color:var(--muted);">/mes</div>
+      </div>
+      <div style="display:inline-block;margin:0 18px;">
+        <div style="font-size:0.8rem;color:var(--muted);font-weight:800;">🔥 Premium</div>
+        <div class="price-display" id="pPrem">$40.000</div>
+        <div style="font-size:0.72rem;color:var(--muted);">/mes</div>
+      </div>
+    </div>
+    <p class="footnote">Valores ilustrativos — redefinibles en backend sin actualizar la app</p>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-icon ic-te">🏪</div><h3>Tiendas vs cobro directo</h3><p>Google Play y App Store localizan precios automáticamente por país. El selector manual cobra mayor relevancia si vendes <strong>fuera de las tiendas</strong> (web, PSE, Nequi) — ahorrando la comisión del 15–30% de las tiendas.</p></div>
+    <div class="card"><div class="card-icon ic-pu">⚙️</div><h3>Arquitectura de precios</h3><p>Tabla <strong>configurable en backend</strong>, nunca hardcoded. Permite ajustar valores, promociones o tasas sin revisión de tienda ni actualizar la app.</p></div>
+  </div>
+</div>
+
+<div class="section" id="s-coins">
+  <div class="sec-title">🪙 Economía KidoCoins</div>
+  <div class="sec-sub">XP → monedas → recompensas · enseña ahorro y gratificación diferida</div><div class="divider"></div>
+  <div class="flow">
+    <div class="flow-step"><span class="em">🎮</span><h4>Ejercicio correcto</h4><p>Aprende jugando</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">⭐</span><h4>Gana XP</h4><p>Progreso de nivel</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">🪙</span><h4>XP → KidoCoins</h4><p>1 XP = 2 monedas</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">🛍️</span><h4>2 tiendas</h4><p>Virtual o premios reales</p></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-icon ic-te">👘</div><h3>Tienda Virtual</h3><p>Skins, accesorios y personalización de KIDO. Precios bajos, gratificación inmediata. Mantiene el engagement diario.</p></div>
+    <div class="card"><div class="card-icon ic-ye">🎁</div><h3>Tienda de Premios Reales</h3><p>Cara, requiere ahorrar semanas. <strong>Pedagógicamente valiosa:</strong> enseña gratificación diferida y planificación.</p></div>
+  </div>
+  <h4 class="block">📦 Recompensas reales por fases</h4>
+  <table>
+    <thead><tr><th>Fase</th><th>Tipo de premio</th><th>Riesgo</th><th>Cuándo</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MVP</strong></td><td>Solo digitales: skins, diplomas/certificados PDF imprimibles</td><td><span class="tag tag-g">Bajo</span></td><td>Lanzamiento</td></tr>
+      <tr><td><strong>Fase 2</strong> ✅</td><td>Bonos/cupones digitales redimibles (parque infantil, librería, cine) <strong>al correo del padre</strong></td><td><span class="tag tag-y">Medio</span></td><td>Mes 8–12</td></tr>
+      <tr><td><strong>Descartado</strong></td><td>Premios físicos a domicilio (peluches, dulces, frutas)</td><td><span class="tag tag-r">Alto</span></td><td>No por ahora</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout-rec"><strong>✅ Decisión: Digitales + bonos al correo del padre</strong>Dan ~80% del efecto motivacional con ~20% del riesgo. El niño ve "ganaste una salida a [parque]", pero el padre controla, valida y recibe. Sin manejar direcciones físicas de menores ni logística inicial.</div>
+  <div class="callout callout-warn"><strong>⚠️ Por qué se descartaron los premios físicos a domicilio</strong>Enviar objetos al hogar implica recolectar dirección física de un menor (información sensible bajo normativa de protección de menores), requiere logística propia que destruye el margen freemium, y dulces/frutas como incentivo de consumo a menores conllevan riesgo reputacional. Reevaluable solo con tracción y capital.</div>
+</div>
+
+<div class="section" id="s-consent">
+  <div class="sec-title">🔐 Consentimiento Parental Verificable</div>
+  <div class="sec-sub">Requisito legal para activar canje de bonos (Fase 2)</div><div class="divider"></div>
+  <div class="callout callout-info"><strong>📋 Principio legal</strong>La normativa de protección de menores exige que el consentimiento parental sea <strong>verificable</strong> — no un simple checkbox. El método debe estar "razonablemente diseñado" para asegurar que quien consiente es el adulto responsable.</div>
+  <h4 class="block">🪜 Flujo propuesto (doble barrera)</h4>
+  <ol class="step-list">
+    <li><strong>Registro del padre con email verificado.</strong> El padre crea la cuenta familiar; se confirma el email con código de un solo uso. El niño nunca registra datos de contacto.</li>
+    <li><strong>Verificación de adulto vía micro-transacción.</strong> Para habilitar canje de bonos, micro-transacción con tarjeta (cargo mínimo reembolsable o autorización $0). Método aceptado: demuestra adulto con medio de pago.</li>
+    <li><strong>PIN parental de 4–6 dígitos.</strong> Configurado por el padre. Requerido en CADA canje. El niño no puede completar ningún canje sin esta barrera.</li>
+    <li><strong>Notificación y confirmación final por email.</strong> Cada solicitud dispara un email al padre que debe confirmar explícitamente antes de procesar el bono.</li>
+    <li><strong>Registro auditable.</strong> Log de cada consentimiento: fecha, qué se autorizó, método e IP. Permite responder a auditorías y solicitudes de revisión/eliminación de los padres.</li>
+  </ol>
+  <div class="flow">
+    <div class="flow-step"><span class="em">📧</span><h4>Email verificado</h4><p>Cuenta del padre</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">💳</span><h4>Micro-transacción</h4><p>Verifica adulto</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">🔢</span><h4>PIN parental</h4><p>Cada canje</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">✅</span><h4>Confirma email</h4><p>Doble check</p></div>
+    <div class="arrow">→</div>
+    <div class="flow-step"><span class="em">📝</span><h4>Log auditable</h4><p>Trazabilidad</p></div>
+  </div>
+  <div class="callout callout-warn"><strong>⚖️ Recomendación profesional</strong>Antes de la Fase 2, valida este flujo con un abogado especializado en protección de datos de menores en Colombia (Ley 1581 / Habeas Data) y, si apuntas a usuarios en EE.UU., en COPPA. Esta especificación es base de diseño, no asesoría legal.</div>
+</div>
+
+<div class="section" id="s-stack">
+  <div class="sec-title">⚙️ Stack Técnico Definitivo — Arquitectura Híbrida</div>
+  <div class="sec-sub">Supabase (infraestructura) + .NET (lógica de negocio) — velocidad Y robustez</div><div class="divider"></div>
+
+  <div class="callout callout-rec"><strong>🔑 La clave que resuelve la indecisión</strong>Supabase NO es lo opuesto a .NET. Supabase es PostgreSQL + Auth + Storage + Realtime empaquetados. Se usa como <strong>capa de infraestructura</strong> (velocidad de desarrollo) mientras .NET maneja la <strong>lógica de negocio sensible</strong> (fortaleza del equipo). No se sacrifica ninguna.</div>
+
+  <div class="stack-diagram">
+    <div class="stack-layer sl-front"><span class="sl-icon">📱</span><div class="sl-body"><h4>Frontend — Flutter (Dart)</h4><p>Motor Impeller, 60–120 FPS, pixel-perfect. Aquí vive TODA la fluidez: animaciones de KIDO, transiciones, respuesta táctil. Esto NO es trabajo de backend.</p></div></div>
+    <div class="conn">▼ SDK Supabase (auth/datos) · API REST a .NET (lógica) ▼</div>
+    <div class="stack-layer sl-back"><span class="sl-icon">⚙️</span><div class="sl-body"><h4>Lógica de negocio — .NET / C#</h4><p>Fortaleza del equipo. Motor Sensei (IA), economía KidoCoins, validación de consentimiento parental, facturación multimoneda, reglas anti-fraude.</p></div></div>
+    <div class="conn">▼ ▼</div>
+    <div class="stack-layer sl-db"><span class="sl-icon">🗄️</span><div class="sl-body"><h4>Infraestructura — Supabase</h4><p>PostgreSQL gestionado + Auth + Storage + Realtime, listos en minutos. Aquí está la velocidad/compactación de desarrollo que buscabas. Open-source = estrategia de salida, sin lock-in profundo.</p></div></div>
+    <div class="conn">◀ Supabase Realtime (caso de uso ideal) ▶</div>
+    <div class="stack-layer sl-rt"><span class="sl-icon">⚡</span><div class="sl-body"><h4>Realtime — Supabase Realtime</h4><p>Solo para el ranking semanal (su caso de uso perfecto). Sin escribir código de sockets. El resto de la app es single-player y NO necesita realtime de backend.</p></div></div>
+  </div>
+
+  <div class="callout callout-info"><strong>🎯 Aclaración conceptual importante</strong>La fluidez, tiempo de respuesta y "realismo" de animaciones es <strong>100% Flutter en el dispositivo</strong> — no toca el servidor. El "Realtime" de backend es sincronización de datos en vivo entre dispositivos, y en esta app eso aplica únicamente al ranking semanal. La app es educativa single-player, no colaborativa.</div>
+
+  <h4 class="block">🧩 Diagrama de responsabilidades — qué vive dónde</h4>
+  <table>
+    <thead><tr><th>Componente</th><th>Vive en</th><th>Por qué</th></tr></thead>
+    <tbody>
+      <tr><td>Animaciones, transiciones, FPS de KIDO</td><td><span class="tag tag-s">Flutter</span></td><td>Rendimiento en dispositivo, motor Impeller</td></tr>
+      <tr><td>Autenticación de padres / cuentas</td><td><span class="tag tag-m">Supabase Auth</span></td><td>JWT + RLS listos, ahorra semanas de desarrollo</td></tr>
+      <tr><td>Datos: perfiles, progreso, XP, niveles</td><td><span class="tag tag-m">Supabase (Postgres)</span></td><td>SQL relacional, RLS a nivel de fila para datos de menores</td></tr>
+      <tr><td>Assets: skins, ilustraciones, Lottie</td><td><span class="tag tag-m">Supabase Storage</span></td><td>CDN integrado, sin configurar S3</td></tr>
+      <tr><td>Ranking semanal en vivo</td><td><span class="tag tag-m">Supabase Realtime</span></td><td>Caso de uso ideal, sin código de sockets</td></tr>
+      <tr><td><strong>Motor Sensei (IA adaptativa)</strong></td><td><span class="tag tag-y">.NET</span></td><td>Lógica compleja propia, propiedad intelectual core</td></tr>
+      <tr><td><strong>Economía KidoCoins (XP→monedas→canje)</strong></td><td><span class="tag tag-y">.NET</span></td><td>Transaccional, anti-fraude, debe ser inviolable</td></tr>
+      <tr><td><strong>Validación de consentimiento parental</strong></td><td><span class="tag tag-y">.NET</span></td><td>Legalmente sensible, requiere control total y auditoría</td></tr>
+      <tr><td><strong>Facturación multimoneda COP/USD</strong></td><td><span class="tag tag-y">.NET</span></td><td>Reglas de negocio, integración pasarelas (PSE/Nequi)</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Regla simple: si Supabase ya lo ofrece bien y no es lógica de negocio propietaria → Supabase. Si es lógica core, sensible o regulada → .NET.</p>
+
+  <h4 class="block">📊 Por qué Flutter (investigación 2026)</h4>
+  <table>
+    <thead><tr><th>Criterio</th><th>Flutter</th><th>React Native</th></tr></thead>
+    <tbody>
+      <tr><td>Animaciones / juego</td><td class="winner">Gana — Impeller, sin jank</td><td class="lose">Inferior en UI muy animada</td></tr>
+      <tr><td>Consistencia pixel-perfect</td><td class="winner">Gana — dibuja cada pixel</td><td class="lose">Varía entre OS</td></tr>
+      <tr><td>ML/IA en dispositivo</td><td class="winner">Gana — Dart FFI + TF Lite</td><td class="lose">Más configuración</td></tr>
+      <tr><td>Gama baja (memoria)</td><td class="lose">~145MB</td><td class="winner">~120MB</td></tr>
+      <tr><td>Pool de talento</td><td class="lose">Menor (creciendo)</td><td class="winner">Comunidad JS gigante</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">La app es esencialmente un juego: KIDO evolucionando, partículas, transiciones lúdicas. Flutter brilla aquí. Punto a vigilar: optimizar memoria en celulares muy básicos.</p>
+
+  <h4 class="block">📊 Decisión de backend — por qué híbrido y no puro</h4>
+  <table>
+    <thead><tr><th>Opción</th><th>Veredicto para KidLearn</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Supabase + .NET (híbrido)</strong></td><td class="winner">✅ Elegido — velocidad de Supabase para infra + robustez .NET para lógica sensible. Lo mejor de ambos sin sacrificar ninguno</td></tr>
+      <tr><td>Solo .NET (todo a mano)</td><td class="neutral">Robusto pero lento: reconstruir auth, storage, realtime desde cero retrasa el MVP innecesariamente</td></tr>
+      <tr><td>Solo Supabase (BaaS completo)</td><td class="neutral">Rápido pero la lógica sensible (Sensei, economía, consentimiento) queda débil en Edge Functions; desaprovecha skill .NET del equipo</td></tr>
+      <tr><td>Firebase (BaaS completo)</td><td class="lose">NoSQL inadecuado para economía relacional y datos de menores; lock-in Google Cloud sin self-hosting</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout-warn"><strong>💰 Nota de costos honesta</strong>El plan Pro de Supabase ($25/mes) trae la instancia de cómputo más pequeña; para producción real se necesita añadir cómputo. Es predecible, pero presupuéstalo desde ahora para evitar sorpresas.</div>
+
+  <h4 class="block">📅 Timeline MVP — 6 meses</h4>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="phase-lbl">Mes 1–2</div><h4>🏗️ Fundación</h4><p>Setup Flutter + Supabase (Auth/DB/Storage en minutos) + servicio .NET, modelado de esquema Postgres, onboarding (edad + selección de gusto), KIDO en 4 ramas × estilo base, selector COP/USD.</p></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="phase-lbl">Mes 3–4</div><h4>🎮 Core Gameplay</h4><p>3 motores de juego, economía XP→KidoCoins en .NET, tienda virtual, evolución de KIDO con Lottie, motor Sensei light en .NET, integración de planes.</p></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="phase-lbl">Mes 5</div><h4>👨‍👩‍👧 Panel padres + monetización</h4><p>Reportes (datos desde Supabase), control de tiempo, PIN parental, facturación .NET + pasarela (tiendas + PSE/Nequi), AdMob kid-safe en gratis, beta con 20 familias.</p></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="phase-lbl">Mes 6</div><h4>🚀 Lanzamiento</h4><p>Ranking semanal con Supabase Realtime, pulido de animaciones, optimización memoria gama baja, revisión App Store + Play Store, lanzamiento.</p></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="phase-lbl">Post-MVP · Mes 8–12</div><h4>🎁 Fase 2</h4><p>Modo Sensei completo en .NET (IA con datos reales), tienda de bonos al correo del padre, flujo de consentimiento verificable.</p></div>
+  </div>
+</div>
+
+<script>
+  function show(id, btn){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('s-'+id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function setCur(c){
+    document.getElementById('bCOP').classList.toggle('on', c==='COP');
+    document.getElementById('bUSD').classList.toggle('on', c==='USD');
+    if(c==='COP'){
+      document.getElementById('pBasic').textContent='$20.000';
+      document.getElementById('pPrem').textContent='$40.000';
+    } else {
+      document.getElementById('pBasic').textContent='$4.99';
+      document.getElementById('pPrem').textContent='$9.99';
+    }
+  }
+</script>
+</body>
+</html>
